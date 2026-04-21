@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cricket Scorecard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/scorecard.css') }}">
+</head>
+<body>
+    <div class="scorecard-container">
+        <!-- Header with Match Info -->
+        <header class="scorecard-header">
+            <div class="match-info">
+                <h1 id="matchTitle">Match in Progress</h1>
+                <p id="matchStatus" class="status-text">Batting Team: <span id="battingTeam"></span></p>
+            </div>
+            <button class="btn-end-match" onclick="endMatch()">⏹️ End Match</button>
+        </header>
+
+        <!-- Main Scorecard Section -->
+        <div class="scorecard-main">
+            
+            <!-- LEFT PANEL: LIVE SCORE & MATCH STATUS -->
+            <div class="left-panel">
+                
+                <!-- Live Score Display -->
+                <div class="live-score-box">
+                    <div class="team-batting">
+                        <h2 id="battingTeamName">Team Name</h2>
+                        <div class="score-display">
+                            <span class="runs-display" id="totalRuns">0</span>
+                            <span class="separator">/</span>
+                            <span class="wickets-display" id="totalWickets">0</span>
+                        </div>
+                        <p class="overs-display">Overs: <span id="totalOvers">0.0</span></p>
+                    </div>
+                </div>
+
+                <!-- Current Batters Section -->
+                <div class="batters-section">
+                    <h3>⚾ Batters</h3>
+                    
+                    <div class="batter-card">
+                        <div class="batter-header">
+                            <span class="batter-label">Batter 1</span>
+                            <span class="batter-status on-strike">ON STRIKE</span>
+                        </div>
+                        <div class="batter-info">
+                            <p class="batter-name" id="batter1Name">-</p>
+                            <div class="batter-stats">
+                                <div class="stat">
+                                    <span class="label">Runs:</span>
+                                    <span class="value" id="batter1Runs">0</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="label">Balls:</span>
+                                    <span class="value" id="batter1Balls">0</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="label">S/R:</span>
+                                    <span class="value" id="batter1SR">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="batter-card">
+                        <div class="batter-header">
+                            <span class="batter-label">Batter 2</span>
+                            <span class="batter-status not-strike">IN CREASE</span>
+                        </div>
+                        <div class="batter-info">
+                            <p class="batter-name" id="batter2Name">-</p>
+                            <div class="batter-stats">
+                                <div class="stat">
+                                    <span class="label">Runs:</span>
+                                    <span class="value" id="batter2Runs">0</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="label">Balls:</span>
+                                    <span class="value" id="batter2Balls">0</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="label">S/R:</span>
+                                    <span class="value" id="batter2SR">-</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Bowler Section -->
+                <div class="bowler-section">
+                    <h3>🎯 Current Bowler</h3>
+                    
+                    <div class="bowler-card">
+                        <p class="bowler-name" id="bowlerName">-</p>
+                        <div class="bowler-stats">
+                            <div class="stat-box">
+                                <span class="label">Overs</span>
+                                <span class="value" id="bowlerOvers">0</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="label">Runs</span>
+                                <span class="value" id="bowlerRuns">0</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="label">Wickets</span>
+                                <span class="value" id="bowlerWickets">0</span>
+                            </div>
+                            <div class="stat-box">
+                                <span class="label">Economy</span>
+                                <span class="value" id="bowlerEconomy">0.0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- This Over's Display -->
+                    <div class="this-over-display">
+                        <p class="this-over-label">This Over:</p>
+                        <div class="balls-display" id="ballsDisplay">
+                            <!-- Balls will be shown here: 1, 2, W, 0, 4, etc -->
+                        </div>
+                        <p class="this-over-runs">Runs: <span id="thisOverRuns">0</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: SCORING BUTTONS & HISTORY -->
+            <div class="right-panel">
+                
+                <!-- Scoring Buttons -->
+                <div class="scoring-section">
+                    <h3>⚡ Record Runs</h3>
+                    <div class="score-buttons">
+                        <button class="btn-score btn-run-0" onclick="recordRuns(0, 'dot')">
+                            <span class="btn-value">0</span>
+                            <span class="btn-label">Dot Ball</span>
+                        </button>
+                        <button class="btn-score btn-run-1" onclick="recordRuns(1)">
+                            <span class="btn-value">1</span>
+                            <span class="btn-label">Run</span>
+                        </button>
+                        <button class="btn-score btn-run-2" onclick="recordRuns(2)">
+                            <span class="btn-value">2</span>
+                            <span class="btn-label">Runs</span>
+                        </button>
+                        <button class="btn-score btn-run-3" onclick="recordRuns(3)">
+                            <span class="btn-value">3</span>
+                            <span class="btn-label">Runs</span>
+                        </button>
+                        <button class="btn-score btn-run-4" onclick="recordRuns(4)">
+                            <span class="btn-value">4</span>
+                            <span class="btn-label">Boundary</span>
+                        </button>
+                        <button class="btn-score btn-run-6" onclick="recordRuns(6)">
+                            <span class="btn-value">6</span>
+                            <span class="btn-label">Six</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Wicket & Wide/No Ball -->
+                <div class="wicket-section">
+                    <h3>⚫ Special Events</h3>
+                    <div class="wicket-buttons">
+                        <button class="btn-wicket" onclick="recordWicket()">
+                            🔴 Wicket
+                        </button>
+                        <button class="btn-wide" onclick="recordWide()">
+                            ↔️ Wide / No Ball
+                        </button>
+                        <button class="btn-undo" onclick="undoLastBall()">
+                            ↩️ Undo Last Ball
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Over Management -->
+                <div class="over-section">
+                    <h3>📊 Over Management</h3>
+                    <div class="over-controls">
+                        <button class="btn-complete-over" onclick="completeOver()">
+                            ✅ Complete Over
+                        </button>
+                        <p class="info-text">Complete 6 balls to move to next over</p>
+                    </div>
+                </div>
+
+                <!-- Ball-by-Ball History -->
+                <div class="history-section">
+                    <h3>📝 Ball History</h3>
+                    <div class="history-list" id="historyList">
+                        <!-- History will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer with Shortcuts -->
+        <footer class="scorecard-footer">
+            <p>💡 <strong>Keyboard Shortcuts:</strong> Press <code>1</code>, <code>2</code>, <code>3</code>, <code>4</code>, <code>6</code>, <code>W</code> for quick scoring</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        /**
+         * ========================================
+         * CRICKET SCORECARD STATE MANAGEMENT
+         * ========================================
+         */
+
+        // Game state object - holds all match data
+        let gameState = {
+            battingTeamName: '',
+            bowlingTeamName: '',
+            players: { team1: [], team2: [] },
+            
+            // Batting team stats
+            totalRuns: 0,
+            totalWickets: 0,
+            totalBalls: 0,
+            
+            // Current batters
+            striker: {
+                name: '',
+                runs: 0,
+                balls: 0,
+                index: 0
+            },
+            nonStriker: {
+                name: '',
+                runs: 0,
+                balls: 0,
+                index: 1
+            },
+            
+            // Current bowler
+            bowler: {
+                name: '',
+                overs: 0,
+                runs: 0,
+                wickets: 0,
+                ballsBowled: 0
+            },
+            
+            // Current over tracking
+            ballsInOver: [],  // Array of balls: [0, 1, 4, 'W', ...]
+            runsInOver: 0,
+            
+            // History
+            ballHistory: []  // All balls bowled
+        };
+
+        /**
+         * ========================================
+         * INITIALIZATION
+         * ========================================
+         */
+
+        window.addEventListener('DOMContentLoaded', function() {
+            initializeGame();
+            setupKeyboardShortcuts();
+        });
+
+        /**
+         * Initialize game from localStorage
+         */
+        function initializeGame() {
+            const gameDataStr = localStorage.getItem('gameData');
+            
+            if (!gameDataStr) {
+                showError('No game data found. Please start a new match.');
+                return;
+            }
+
+            const gameData = JSON.parse(gameDataStr);
+
+            // Set up teams
+            gameState.players.team1 = gameData.team1.players;
+            gameState.players.team2 = gameData.team2.players;
+            gameState.battingTeamName = gameData.team1.name;
+            gameState.bowlingTeamName = gameData.team2.name;
+
+            // Set initial batters (first two players)
+            gameState.striker.name = gameData.team1.players[0];
+            gameState.nonStriker.name = gameData.team1.players[1];
+
+            // Set initial bowler (first player of bowling team)
+            gameState.bowler.name = gameData.team2.players[0];
+
+            // Update UI
+            updateScoreboard();
+            document.getElementById('matchTitle').textContent = 
+                `${gameState.battingTeamName} vs ${gameState.bowlingTeamName}`;
+            document.getElementById('battingTeam').textContent = gameState.battingTeamName;
+        }
+
+        /**
+         * ========================================
+         * RUN RECORDING
+         * ========================================
+         */
+
+        /**
+         * Record runs for a ball
+         */
+        function recordRuns(runs, type = 'normal') {
+            // Record the ball
+            gameState.ballsInOver.push(runs);
+            gameState.runsInOver += runs;
+            gameState.totalRuns += runs;
+            gameState.totalBalls += 1;
+            gameState.bowler.ballsBowled += 1;
+            gameState.bowler.runs += runs;
+
+            // Update current batter stats
+            gameState.striker.runs += runs;
+            gameState.striker.balls += 1;
+
+            // Add to history
+            const ballNumber = `${Math.floor(gameState.bowler.ballsBowled / 6)}.${gameState.bowler.ballsBowled % 6}`;
+            gameState.ballHistory.push({
+                ball: ballNumber,
+                runs: runs,
+                bowler: gameState.bowler.name,
+                striker: gameState.striker.name,
+                type: type
+            });
+
+            // Toggle strike if odd runs
+            if (runs % 2 === 1) {
+                toggleStrike();
+            }
+
+            // Check if over is complete (6 balls)
+            if (gameState.ballsInOver.length === 6) {
+                completeOverAutomatically();
+            }
+
+            updateScoreboard();
+        }
+
+        /**
+         * Record a wicket
+         */
+        function recordWicket() {
+            gameState.ballsInOver.push('W');
+            gameState.totalWickets += 1;
+            gameState.totalBalls += 1;
+            gameState.bowler.ballsBowled += 1;
+            gameState.bowler.wickets += 1;
+
+            // Add to history
+            const ballNumber = `${Math.floor(gameState.bowler.ballsBowled / 6)}.${gameState.bowler.ballsBowled % 6}`;
+            gameState.ballHistory.push({
+                ball: ballNumber,
+                runs: 'W',
+                bowler: gameState.bowler.name,
+                striker: gameState.striker.name,
+                type: 'wicket'
+            });
+
+            // Move to next batter
+            gameState.striker.index += 1;
+            if (gameState.striker.index < gameState.players.team1.length) {
+                gameState.striker.name = gameState.players.team1[gameState.striker.index];
+                gameState.striker.runs = 0;
+                gameState.striker.balls = 0;
+            } else {
+                showError('All batters out! Match over.');
+            }
+
+            if (gameState.ballsInOver.length === 6) {
+                completeOverAutomatically();
+            }
+
+            updateScoreboard();
+        }
+
+        /**
+         * Record a wide or no-ball
+         */
+        function recordWide() {
+            gameState.ballsInOver.push('+');  // Extra ball
+            gameState.totalRuns += 1;
+            gameState.runsInOver += 1;
+            gameState.bowler.runs += 1;
+
+            gameState.ballHistory.push({
+                ball: `${Math.floor(gameState.bowler.ballsBowled / 6)}.${gameState.bowler.ballsBowled % 6}`,
+                runs: '+1',
+                bowler: gameState.bowler.name,
+                type: 'wide'
+            });
+
+            // Extra ball is NOT counted in bowler's 6 balls for this iteration
+            // (In real cricket, it would continue the over)
+
+            updateScoreboard();
+        }
+
+        /**
+         * ========================================
+         * STRIKE MANAGEMENT
+         * ========================================
+         */
+
+        /**
+         * Toggle strike between batters
+         */
+        function toggleStrike() {
+            // Swap striker and non-striker
+            let temp = gameState.striker;
+            gameState.striker = gameState.nonStriker;
+            gameState.nonStriker = temp;
+            
+            updateScoreboard();
+        }
+
+        /**
+         * ========================================
+         * OVER MANAGEMENT
+         * ========================================
+         */
+
+        /**
+         * Complete current over
+         */
+        function completeOver() {
+            if (gameState.ballsInOver.length < 6) {
+                showError(`Only ${gameState.ballsInOver.length} balls bowled. Need 6 balls to complete over.`);
+                return;
+            }
+
+            completeOverAutomatically();
+        }
+
+        /**
+         * Automatically complete over when 6 balls are bowled
+         */
+        function completeOverAutomatically() {
+            // Toggle strike automatically (6 is even, so goes back to original striker)
+            toggleStrike();
+
+            // Reset over data
+            gameState.ballsInOver = [];
+            gameState.runsInOver = 0;
+
+            // Change bowler (rotate to next bowler)
+            let currentBowlerIndex = gameState.players.team2.indexOf(gameState.bowler.name);
+            let nextBowlerIndex = (currentBowlerIndex + 1) % gameState.players.team2.length;
+            gameState.bowler.name = gameState.players.team2[nextBowlerIndex];
+            gameState.bowler.overs = 0;
+            gameState.bowler.runs = 0;
+            gameState.bowler.wickets = 0;
+            gameState.bowler.ballsBowled = 0;
+
+            updateScoreboard();
+            showSuccess('Over completed! New bowler coming in.');
+        }
+
+        /**
+         * Undo last ball - PROPER IMPLEMENTATION
+         */
+        function undoLastBall() {
+            // Check if there's anything to undo
+            if (gameState.ballHistory.length === 0) {
+                showError('Nothing to undo');
+                return;
+            }
+
+            // Get the last ball from history
+            const lastBall = gameState.ballHistory.pop();
+            
+            // Remove from this over's balls
+            if (gameState.ballsInOver.length > 0) {
+                gameState.ballsInOver.pop();
+            }
+
+            // Parse the runs from last ball
+            const runsValue = lastBall.runs === 'W' ? 0 : (lastBall.runs === '+1' ? 1 : parseInt(lastBall.runs));
+
+            // ========================================
+            // STEP 1: Reverse strike toggle if needed
+            // ========================================
+            // If odd runs were scored, strike was toggled
+            if (runsValue % 2 === 1 && lastBall.runs !== 'W') {
+                toggleStrike();
+            }
+
+            // ========================================
+            // STEP 2: Undo batter stats
+            // ========================================
+            if (lastBall.runs !== 'W') {
+                // Reduce striker's runs and balls
+                gameState.striker.runs -= runsValue;
+                gameState.striker.balls -= 1;
+                
+                // Reduce team total
+                gameState.totalRuns -= runsValue;
+                gameState.runsInOver -= runsValue;
+            } else {
+                // It was a wicket - restore previous batter
+                gameState.striker.index -= 1;
+                if (gameState.striker.index >= 0) {
+                    gameState.striker.name = gameState.players.team1[gameState.striker.index];
+                    gameState.striker.runs = 0;
+                    gameState.striker.balls = 0;
+                }
+            }
+
+            // ========================================
+            // STEP 3: Undo bowler stats
+            // ========================================
+            gameState.totalBalls -= 1;
+            gameState.bowler.ballsBowled -= 1;
+            gameState.bowler.runs -= runsValue;
+
+            if (lastBall.runs === 'W') {
+                gameState.bowler.wickets -= 1;
+                gameState.totalWickets -= 1;
+            }
+
+            // ========================================
+            // STEP 4: Undo wide/no-ball if applicable
+            // ========================================
+            if (lastBall.type === 'wide') {
+                gameState.totalRuns -= 1;
+                gameState.runsInOver -= 1;
+                gameState.bowler.runs -= 1;
+            }
+
+            // ========================================
+            // STEP 5: Update UI
+            // ========================================
+            updateScoreboard();
+            showSuccess('Last ball undone!');
+        }
+
+        /**
+         * ========================================
+         * UI UPDATE
+         * ========================================
+         */
+
+        /**
+         * Update all scoreboard displays
+         */
+        function updateScoreboard() {
+            // Live Score
+            document.getElementById('battingTeamName').textContent = gameState.battingTeamName;
+            document.getElementById('totalRuns').textContent = gameState.totalRuns;
+            document.getElementById('totalWickets').textContent = gameState.totalWickets;
+            document.getElementById('totalOvers').textContent = 
+                `${Math.floor(gameState.totalBalls / 6)}.${gameState.totalBalls % 6}`;
+
+            // Striker Stats
+            document.getElementById('batter1Name').textContent = gameState.striker.name;
+            document.getElementById('batter1Runs').textContent = gameState.striker.runs;
+            document.getElementById('batter1Balls').textContent = gameState.striker.balls;
+            document.getElementById('batter1SR').textContent = gameState.striker.balls > 0 
+                ? (gameState.striker.runs * 100 / gameState.striker.balls).toFixed(2)
+                : '-';
+
+            // Non-striker Stats
+            document.getElementById('batter2Name').textContent = gameState.nonStriker.name;
+            document.getElementById('batter2Runs').textContent = gameState.nonStriker.runs;
+            document.getElementById('batter2Balls').textContent = gameState.nonStriker.balls;
+            document.getElementById('batter2SR').textContent = gameState.nonStriker.balls > 0
+                ? (gameState.nonStriker.runs * 100 / gameState.nonStriker.balls).toFixed(2)
+                : '-';
+
+            // Bowler Stats
+            document.getElementById('bowlerName').textContent = gameState.bowler.name;
+            document.getElementById('bowlerOvers').textContent = gameState.bowler.ballsBowled;
+            document.getElementById('bowlerRuns').textContent = gameState.bowler.runs;
+            document.getElementById('bowlerWickets').textContent = gameState.bowler.wickets;
+            document.getElementById('bowlerEconomy').textContent = gameState.bowler.ballsBowled > 0
+                ? (gameState.bowler.runs * 6 / gameState.bowler.ballsBowled).toFixed(2)
+                : '0.0';
+
+            // This Over Display
+            document.getElementById('thisOverRuns').textContent = gameState.runsInOver;
+            updateBallsDisplay();
+
+            // History
+            updateHistoryDisplay();
+        }
+
+        /**
+         * Update balls display (show balls bowled in this over)
+         */
+        function updateBallsDisplay() {
+            const display = document.getElementById('ballsDisplay');
+            display.innerHTML = '';
+
+            gameState.ballsInOver.forEach((ball, index) => {
+                const ballElement = document.createElement('div');
+                ballElement.className = 'ball';
+                
+                if (ball === 'W') {
+                    ballElement.classList.add('wicket');
+                    ballElement.textContent = 'W';
+                } else if (ball === '+') {
+                    ballElement.classList.add('wide');
+                    ballElement.textContent = '+';
+                } else if (ball === 0) {
+                    ballElement.classList.add('dot');
+                    ballElement.textContent = '•';
+                } else {
+                    ballElement.classList.add('run');
+                    ballElement.textContent = ball;
+                }
+
+                display.appendChild(ballElement);
+            });
+        }
+
+        /**
+         * Update ball history display
+         */
+        function updateHistoryDisplay() {
+            const historyDiv = document.getElementById('historyList');
+            historyDiv.innerHTML = '';
+
+            gameState.ballHistory.slice().reverse().forEach((ball, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                
+                let content = `Over ${ball.ball}: `;
+                if (ball.runs === 'W') {
+                    content += `<span class="wicket-text">WICKET</span> - ${ball.striker}`;
+                } else {
+                    content += `<span class="runs-text">${ball.runs}</span> runs`;
+                }
+
+                historyItem.innerHTML = content;
+                historyDiv.appendChild(historyItem);
+            });
+        }
+
+        /**
+         * ========================================
+         * KEYBOARD SHORTCUTS
+         * ========================================
+         */
+
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(event) {
+                if (event.key === '0') recordRuns(0, 'dot');
+                else if (event.key === '1') recordRuns(1);
+                else if (event.key === '2') recordRuns(2);
+                else if (event.key === '3') recordRuns(3);
+                else if (event.key === '4') recordRuns(4);
+                else if (event.key === '6') recordRuns(6);
+                else if (event.key.toLowerCase() === 'w') recordWicket();
+                else if (event.key === 'Backspace') undoLastBall();
+            });
+        }
+
+        /**
+         * ========================================
+         * UTILITY FUNCTIONS
+         * ========================================
+         */
+
+        function showError(message) {
+            alert('❌ ' + message);
+        }
+
+        function showSuccess(message) {
+            alert('✅ ' + message);
+        }
+
+        function endMatch() {
+            if (confirm('Are you sure you want to end this match?')) {
+                window.location.href = '/cricket';
+            }
+        }
+    </script>
+</body>
+</html>

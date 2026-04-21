@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} - Cricket Scorer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/cricket.css') }}">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>🏏 Cricket Score Tracker</h1>
+            <p>Enter player names for both teams to get started</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Error Messages -->
+            <div id="errorMessage" class="alert alert-error hidden"></div>
+            <div id="successMessage" class="alert alert-success hidden"></div>
+
+            <!-- Teams Container -->
+            <div class="teams-container">
+                <!-- Team 1 -->
+                <div class="team-section">
+                    <div class="team-header">
+                        <h2>Team 1</h2>
+                        <input 
+                            type="text" 
+                            id="team1Name" 
+                            class="team-name-input" 
+                            placeholder="Enter team name"
+                            value="Team 1"
+                        >
+                    </div>
+
+                    <!-- Team 1 Players -->
+                    <div class="players-container" id="team1PlayersContainer">
+                        <!-- Player inputs will be generated here by JavaScript -->
+                        <div class="player-input-group">
+                            <input 
+                                type="text" 
+                                class="player-input team1-player" 
+                                placeholder="Player name"
+                                data-player-index="0"
+                            >
+                            <button class="btn-remove" onclick="removePlayer(this, 1)">❌</button>
+                        </div>
+                    </div>
+
+                    <!-- Add Player Button -->
+                    <button class="btn-add-player" onclick="addPlayerField(1)">
+                        ➕ Add Player
+                    </button>
+                </div>
+
+                <!-- Team 2 -->
+                <div class="team-section">
+                    <div class="team-header">
+                        <h2>Team 2</h2>
+                        <input 
+                            type="text" 
+                            id="team2Name" 
+                            class="team-name-input" 
+                            placeholder="Enter team name"
+                            value="Team 2"
+                        >
+                    </div>
+
+                    <!-- Team 2 Players -->
+                    <div class="players-container" id="team2PlayersContainer">
+                        <!-- Player inputs will be generated here by JavaScript -->
+                        <div class="player-input-group">
+                            <input 
+                                type="text" 
+                                class="player-input team2-player" 
+                                placeholder="Player name"
+                                data-player-index="0"
+                            >
+                            <button class="btn-remove" onclick="removePlayer(this, 2)">❌</button>
+                        </div>
+                    </div>
+
+                    <!-- Add Player Button -->
+                    <button class="btn-add-player" onclick="addPlayerField(2)">
+                        ➕ Add Player
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn-primary" onclick="startGame()">🎮 Start Game</button>
+                <a href="/" class="btn-secondary">← Back Home</a>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        /**
+         * ========================================
+         * PLAYER INPUT MANAGEMENT
+         * ========================================
+         */
+
+        // Keep track of how many players each team has
+        let playerCounts = {
+            1: 1,  // Team 1 has 1 player initially
+            2: 1   // Team 2 has 1 player initially
+        };
+
+        /**
+         * Add a new player input field to a team
+         * @param teamNumber - 1 or 2 (which team)
+         */
+        function addPlayerField(teamNumber) {
+            // Increment player count
+            playerCounts[teamNumber]++;
+
+            // Get the container where we add the input
+            const containerId = `team${teamNumber}PlayersContainer`;
+            const container = document.getElementById(containerId);
+
+            // Create a new player input group
+            const playerGroup = document.createElement('div');
+            playerGroup.className = 'player-input-group';
+            playerGroup.innerHTML = `
+                <input 
+                    type="text" 
+                    class="player-input team${teamNumber}-player" 
+                    placeholder="Player name"
+                    data-player-index="${playerCounts[teamNumber] - 1}"
+                >
+                <button class="btn-remove" onclick="removePlayer(this, ${teamNumber})">❌</button>
+            `;
+
+            // Add to the container
+            container.appendChild(playerGroup);
+
+            // Focus on the new input (better UX)
+            playerGroup.querySelector('.player-input').focus();
+        }
+
+        /**
+         * Remove a player input field
+         * @param buttonElement - The remove button that was clicked
+         * @param teamNumber - 1 or 2 (which team)
+         */
+        function removePlayer(buttonElement, teamNumber) {
+            const containerId = `team${teamNumber}PlayersContainer`;
+            const container = document.getElementById(containerId);
+            
+            // Don't allow removing if only 1 player left
+            if (container.children.length <= 1) {
+                showError(`Each team must have at least 1 player`);
+                return;
+            }
+
+            // Remove the entire player input group
+            buttonElement.parentElement.remove();
+            playerCounts[teamNumber]--;
+        }
+
+        /**
+         * ========================================
+         * GAME VALIDATION & START
+         * ========================================
+         */
+
+        /**
+         * Collect all player names from inputs
+         * @param teamNumber - 1 or 2
+         * @returns array of player names
+         */
+        function getTeamPlayers(teamNumber) {
+            // Select all input fields for this team
+            const inputs = document.querySelectorAll(`.team${teamNumber}-player`);
+            
+            // Convert to array and get the values
+            return Array.from(inputs)
+                .map(input => input.value.trim())
+                .filter(name => name !== ''); // Remove empty entries
+        }
+
+        /**
+         * Start the cricket game
+         * Validates players and sends to backend
+         */
+        function startGame() {
+            // Get team names
+            const team1Name = document.getElementById('team1Name').value.trim();
+            const team2Name = document.getElementById('team2Name').value.trim();
+
+            // Get player names
+            const team1Players = getTeamPlayers(1);
+            const team2Players = getTeamPlayers(2);
+
+            // Basic frontend validation
+            if (team1Players.length === 0) {
+                showError('Team 1 must have at least one player');
+                return;
+            }
+
+            if (team2Players.length === 0) {
+                showError('Team 2 must have at least one player');
+                return;
+            }
+
+            if (!team1Name) {
+                showError('Please enter Team 1 name');
+                return;
+            }
+
+            if (!team2Name) {
+                showError('Please enter Team 2 name');
+                return;
+            }
+
+            // Disable button while sending
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = '⏳ Starting...';
+
+            // Send to backend API
+            fetch('/api/validate-players', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    team1_name: team1Name,
+                    team1_players: team1Players,
+                    team2_name: team2Name,
+                    team2_players: team2Players
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    showSuccess(`Game started! ${team1Name} vs ${team2Name}`);
+                    
+                    // Store game data in localStorage for the scorecard page
+                    localStorage.setItem('gameData', JSON.stringify(data.game_data));
+                    
+                    // Redirect to scorecard after 1.5 seconds
+                    setTimeout(() => {
+                        window.location.href = '/scorecard';
+                    }, 1500);
+                } else {
+                    showError(data.message || 'Failed to start game');
+                    button.disabled = false;
+                    button.textContent = '🎮 Start Game';
+                }
+            })
+            .catch(error => {
+                showError('Network error: ' + error.message);
+                button.disabled = false;
+                button.textContent = '🎮 Start Game';
+            });
+        }
+
+        /**
+         * ========================================
+         * MESSAGE DISPLAY HELPERS
+         * ========================================
+         */
+
+        /**
+         * Show error message
+         */
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+
+            // Hide after 5 seconds
+            setTimeout(() => {
+                errorDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        /**
+         * Show success message
+         */
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.remove('hidden');
+
+            setTimeout(() => {
+                successDiv.classList.add('hidden');
+            }, 5000);
+        }
+
+        /**
+         * ========================================
+         * KEYBOARD SHORTCUTS (Better UX)
+         * ========================================
+         */
+
+        // Allow Enter key to add players
+        document.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                // If focus is on a player input, add new player to same team
+                if (event.target.classList.contains('player-input')) {
+                    const teamClass = event.target.className;
+                    if (teamClass.includes('team1-player')) {
+                        addPlayerField(1);
+                    } else if (teamClass.includes('team2-player')) {
+                        addPlayerField(2);
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
