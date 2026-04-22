@@ -1,35 +1,31 @@
-# Python Flask Web Application
+# Cricket Scoring Web Application 🏏
 
-A modern Python web application built with Flask framework, ready for development and deployment.
+A modern, professional cricket scoring application built with Flask, featuring real-time scoring, partnership tracking, player statistics, and comprehensive match results.
 
-## Project Structure
+## 🚀 Quick Start (Effortless Launch)
 
-```
-.
-├── app/                      # Application package
-│   ├── __init__.py          # Flask app factory
-│   ├── routes.py            # Application routes
-│   ├── templates/           # HTML templates
-│   │   ├── index.html
-│   │   └── about.html
-│   └── static/              # Static files (CSS, JS, images)
-├── config.py                # Configuration settings
-├── run.py                   # Application entry point
-├── requirements.txt         # Python dependencies
-├── .env.example             # Environment variables template
-├── .gitignore              # Git ignore file
-└── README.md               # This file
+### For Linux/macOS:
+```bash
+./start.sh
 ```
 
-## Prerequisites
+### For Windows:
+```bash
+start.bat
+```
 
-- Python 3.8 or higher
-- pip (Python package manager)
+That's it! The app will automatically:
+- ✅ Check for virtual environment
+- ✅ Activate the environment  
+- ✅ Install dependencies if needed
+- ✅ Start the Flask server
+- 📱 Available at: `http://127.0.0.1:5000`
 
-## Setup Instructions
+## 📋 Manual Setup (Alternative)
+
+If you prefer manual setup or the automated script fails:
 
 ### 1. Create Virtual Environment
-
 ```bash
 python -m venv venv
 ```
@@ -47,64 +43,90 @@ venv\Scripts\activate
 ```
 
 ### 3. Install Dependencies
-
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Create Environment File
-
-Copy `.env.example` to `.env` and update with your settings:
-```bash
-cp .env.example .env
-```
-
-### 5. Run the Application
-
+### 4. Run the Application
 ```bash
 python run.py
 ```
 
-The application will be available at: `http://localhost:5000`
+## 🎯 Features
 
-## Available Routes
+- **Real-time Scoring** - Live cricket match scoring with timer
+- **Partnership Tracking** - Detailed partnership statistics  
+- **Player Statistics** - Batting and bowling stats visible mid-game
+- **Professional UI** - Responsive design with dark theme
+- **Match Results** - Comprehensive results with winner determination
+- **Keyboard Shortcuts** - Efficient scoring with keyboard controls
+- **Undo Functionality** - Correct mistakes with undo feature
 
-- `/` - Home page
+## 🏗️ Project Structure
+
+```
+.
+├── app/                      # Application package
+│   ├── __init__.py          # Flask app factory
+│   ├── routes.py            # Application routes
+│   ├── templates/           # HTML templates
+│   │   ├── cricket.html     # Team setup page
+│   │   ├── toss.html        # Coin toss simulator
+│   │   ├── scorecard.html   # Live scoring interface
+│   │   ├── results.html     # Match results page
+│   │   └── about.html       # About page
+│   └── static/              # Static files (CSS, JS, images)
+│       └── css/
+│           ├── cricket.css
+│           └── scorecard.css
+├── config.py                # Configuration settings
+├── run.py                   # Application entry point
+├── start.sh                 # Linux/macOS launcher
+├── start.bat                # Windows launcher
+├── requirements.txt         # Python dependencies
+├── .env.example             # Environment variables template
+├── .gitignore              # Git ignore file
+└── README.md               # This file
+```
+
+## 🎮 How to Use
+
+1. **Setup Teams**: Start at `/cricket` to configure teams and players
+2. **Coin Toss**: Go to `/toss` for the toss simulation  
+3. **Live Scoring**: Use `/scorecard` for real-time match scoring
+4. **View Results**: Check `/results` for comprehensive match summary
+
+### Keyboard Shortcuts (in scorecard):
+- `0-6` - Record runs
+- `W` - Wide ball
+- `Shift+W` - Wicket
+- `Space` - Start/stop timer
+- `Backspace` - Undo last ball
+
+## 📱 Available Routes
+
+- `/` - Home page (redirects to cricket)
+- `/cricket` - Team setup and player selection
+- `/toss` - Coin toss simulator
+- `/scorecard` - Live match scoring interface
+- `/results` - Match results and statistics
 - `/about` - About page
-- `/api/hello` - JSON API endpoint
+- `/api/validate-players` - Player validation API
 
-## Project Features
+## 🛠️ Technical Stack
 
-- **Application Factory Pattern** - Flexible app configuration
-- **Configuration Management** - Environment-based settings
-- **Blueprint Routing** - Modular route organization
-- **Jinja2 Templates** - Dynamic HTML rendering
-- **Static Files Support** - CSS, JavaScript, and images
-- **Environment Variables** - Secure configuration handling
+- **Backend**: Flask 2.3.2 (Python web framework)
+- **Frontend**: HTML5, CSS3, Vanilla JavaScript
+- **State Management**: JavaScript gameState with localStorage
+- **Architecture**: MVC pattern with Blueprint routing
+- **Styling**: Responsive design with mobile-first approach
 
-## Development
+## 🔧 Development
 
 To enable debug mode during development, ensure `FLASK_ENV=development` in your `.env` file.
 
-## Next Steps
-
-1. Add more routes in `app/routes.py`
-2. Create additional templates in `app/templates/`
-3. Add static files (CSS, JS, images) to `app/static/`
-4. Implement database models if needed
-5. Add authentication/authorization as required
-6. Create unit tests for your routes
-
-## Dependencies
+## 📦 Dependencies
 
 - **Flask** - Web framework
 - **python-dotenv** - Environment variable management
-- **Werkzeug** - WSGI utilities
-
-For more information, visit:
-- [Flask Documentation](https://flask.palletsprojects.com/)
-- [Flask Best Practices](https://flask.palletsprojects.com/patterns/)
-
-## License
-
-This project is licensed under the MIT License.
+- **Werkzeug** - WSGI utility library
