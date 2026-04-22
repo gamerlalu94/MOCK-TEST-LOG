@@ -92,10 +92,20 @@ def validate_players():
             'message': f'Server error: {str(e)}'
         }), 500
 
+@main_bp.route('/toss')
+def toss():
+    """Coin toss simulator page"""
+    return render_template('toss.html', title='Coin Toss')
+
 @main_bp.route('/scorecard')
 def scorecard():
     """Cricket scorecard page"""
     return render_template('scorecard.html', title='Scorecard')
+
+@main_bp.route('/results')
+def results():
+    """Match results and player statistics page"""
+    return render_template('results.html', title='Match Results')
 
 @main_bp.route('/about')
 def about():

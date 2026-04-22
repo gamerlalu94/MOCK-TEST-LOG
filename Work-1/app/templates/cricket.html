@@ -241,12 +241,12 @@
                 if (data.status === 'success') {
                     showSuccess(`Game started! ${team1Name} vs ${team2Name}`);
                     
-                    // Store game data in localStorage for the scorecard page
+                    // Store game data in localStorage for the toss page
                     localStorage.setItem('gameData', JSON.stringify(data.game_data));
                     
-                    // Redirect to scorecard after 1.5 seconds
+                    // Redirect to toss page after 1.5 seconds
                     setTimeout(() => {
-                        window.location.href = '/scorecard';
+                        window.location.href = '/toss';
                     }, 1500);
                 } else {
                     showError(data.message || 'Failed to start game');
