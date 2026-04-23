@@ -2,6 +2,9 @@
 
 A modern, professional cricket scoring application built with Flask, featuring real-time scoring, partnership tracking, player statistics, and comprehensive match results.
 
+**Latest Version**: Enhanced with accurate stopwatch, innings summary, and run rate reference tools
+**Last Updated**: April 2026
+
 ## 🚀 Quick Start (Effortless Launch)
 
 ### For Linux/macOS:
@@ -55,12 +58,15 @@ python run.py
 ## 🎯 Features
 
 - **Real-time Scoring** - Live cricket match scoring with timer
-- **Partnership Tracking** - Detailed partnership statistics  
+- **Partnership Tracking** - Detailed partnership statistics
 - **Player Statistics** - Batting and bowling stats visible mid-game
 - **Professional UI** - Responsive design with dark theme
 - **Match Results** - Comprehensive results with winner determination
 - **Keyboard Shortcuts** - Efficient scoring with keyboard controls
 - **Undo Functionality** - Correct mistakes with undo feature
+- **Accurate Stopwatch** - Phone-quality timer using requestAnimationFrame for precise timing
+- **Innings Summary** - First innings summary modal before starting second innings
+- **Run Rate Reference** - Current and required run rate display during second innings chase
 
 ## 🏗️ Project Structure
 
@@ -103,6 +109,26 @@ python run.py
 - `Space` - Start/stop timer
 - `Backspace` - Undo last ball
 
+## ⭐ Recent Enhancements
+
+### ⏱️ Accurate Stopwatch
+- Upgraded from `setInterval` to `requestAnimationFrame` for phone-quality precision
+- Sub-millisecond accuracy matching modern stopwatch apps
+- Smoother animations and better performance
+
+### 📊 First Innings Summary
+- Professional summary modal appears before starting second innings
+- Displays final score, wickets, overs, and run rate
+- Shows target for second innings (runs + 1)
+- Clean transition to player selection
+
+### 📈 Run Rate Reference Panel
+- **Current Run Rate**: Shows current scoring rate (runs per over)
+- **Required Run Rate**: Displays needed rate to reach target during chase
+- Only visible during second innings for relevant reference
+- Smart calculations for limited overs matches
+- Shows runs needed and overs remaining
+
 ## 📱 Available Routes
 
 - `/` - Home page (redirects to cricket)
@@ -120,6 +146,7 @@ python run.py
 - **State Management**: JavaScript gameState with localStorage
 - **Architecture**: MVC pattern with Blueprint routing
 - **Styling**: Responsive design with mobile-first approach
+- **Timing**: requestAnimationFrame for high-precision stopwatch functionality
 
 ## 🔧 Development
 

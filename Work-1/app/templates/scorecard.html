@@ -1047,6 +1047,54 @@
         </div>
     </div>
 
+    <!-- First Innings Summary Modal -->
+    <div id="firstInningsSummaryModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>📊 FIRST INNINGS SUMMARY</h2>
+                <span class="close-modal" style="visibility: hidden;">&times;</span>
+            </div>
+            <div style="padding: 30px; text-align: center;">
+                <div style="background: #0f3460; border-radius: 12px; padding: 25px; margin-bottom: 25px; border: 2px solid #ffd700;">
+                    <h3 style="color: #ffd700; margin-bottom: 20px; font-size: 18px;">🏏 <span id="summaryTeamName">Team</span></h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #2ecc71;"><span id="summaryRuns">0</span></div>
+                            <div style="color: #b0b0b0; font-size: 12px;">RUNS</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #e74c3c;"><span id="summaryWickets">0</span></div>
+                            <div style="color: #b0b0b0; font-size: 12px;">WICKETS</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #3498db;"><span id="summaryOvers">0.0</span></div>
+                            <div style="color: #b0b0b0; font-size: 12px;">OVERS</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #f39c12;"><span id="summaryRunRate">0.00</span></div>
+                            <div style="color: #b0b0b0; font-size: 12px;">RUN RATE</div>
+                        </div>
+                    </div>
+                    
+                    <div style="border-top: 1px solid #254e7b; padding-top: 15px;">
+                        <div style="color: #ffd700; font-size: 16px; font-weight: bold;">
+                            Target for 2nd Innings: <span style="color: #2ecc71;" id="summaryTarget">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <p style="color: #b0b0b0; margin-bottom: 25px; font-size: 14px;">
+                    Great performance! Now prepare for the chase.
+                </p>
+
+                <button onclick="proceedToSecondInningsSetup()" style="background: #ffd700; color: #000; padding: 15px 40px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; width: 100%; text-transform: uppercase; transition: all 0.3s;">
+                    ▶ Continue to 2nd Innings
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Dismissal Mode Modal -->
     <div id="dismissalModal" class="modal">
         <div class="modal-content" style="max-width: 500px;">
@@ -1128,7 +1176,7 @@
 
         // ===== TIMER VARIABLES =====
         let ballTimerStart = null;
-        let ballTimerInterval = null;
+        let ballTimerAnimationId = null;
         let currentBallElapsedMs = 0;
 
         // ===== MODAL STATE =====
@@ -1303,7 +1351,7 @@
             };
 
             // Stop timer and record bowl time
-            if (ballTimerInterval) {
+            if (ballTimerAnimationId) {
                 stopBallTimer();
             }
             const bowlTimeMs = currentBallElapsedMs;
@@ -1385,7 +1433,7 @@
                 outPlayers: [...gameState.outPlayers]
             };
 
-            if (ballTimerInterval) stopBallTimer();
+            if (ballTimerAnimationId) stopBallTimer();
             const bowlTimeMs = currentBallElapsedMs;
 
             gameState.totalWickets += 1;
@@ -1456,7 +1504,7 @@
                 bowlerRuns: gameState.playerStats[gameState.bowlerName]?.bowling.runs || 0
             };
 
-            if (ballTimerInterval) stopBallTimer();
+            if (ballTimerAnimationId) stopBallTimer();
 
             gameState.totalRuns += 1;
             gameState.runsInOver += 1;
@@ -1494,7 +1542,7 @@
                 strikerBalls: gameState.playerStats[gameState.strikerName]?.batting.balls || 0
             };
 
-            if (ballTimerInterval) stopBallTimer();
+            if (ballTimerAnimationId) stopBallTimer();
 
             // Show runs selection modal for byes
             showRunsModal('Select Bye Runs', (runs) => {
@@ -1546,7 +1594,7 @@
                 strikerBalls: gameState.playerStats[gameState.strikerName]?.batting.balls || 0
             };
 
-            if (ballTimerInterval) stopBallTimer();
+            if (ballTimerAnimationId) stopBallTimer();
 
             // Show runs selection modal for leg byes
             showRunsModal('Select Leg Bye Runs', (runs) => {
@@ -1595,7 +1643,7 @@
                 bowlerRuns: gameState.playerStats[gameState.bowlerName]?.bowling.runs || 0
             };
 
-            if (ballTimerInterval) stopBallTimer();
+            if (ballTimerAnimationId) stopBallTimer();
 
             gameState.totalRuns += 1;
             gameState.runsInOver += 1;
@@ -1711,6 +1759,37 @@
 
         // ===== PREPARE SECOND INNINGS =====
         function startSecondInnings() {
+            // Show first innings summary before proceeding
+            showFirstInningsSummary();
+        }
+
+        function showFirstInningsSummary() {
+            // Calculate first innings stats
+            const firstInnings = {
+                teamName: gameState.battingTeamName,
+                runs: gameState.totalRuns,
+                wickets: gameState.totalWickets,
+                overs: (gameState.totalBalls / 6).toFixed(1),
+                runRate: gameState.totalBalls > 0 ? (gameState.totalRuns / (gameState.totalBalls / 6)).toFixed(2) : '0.00'
+            };
+
+            // Populate summary modal
+            document.getElementById('summaryTeamName').textContent = firstInnings.teamName;
+            document.getElementById('summaryRuns').textContent = firstInnings.runs;
+            document.getElementById('summaryWickets').textContent = firstInnings.wickets;
+            document.getElementById('summaryOvers').textContent = firstInnings.overs;
+            document.getElementById('summaryRunRate').textContent = firstInnings.runRate;
+            document.getElementById('summaryTarget').textContent = firstInnings.runs + 1;
+
+            // Show summary modal
+            document.getElementById('firstInningsSummaryModal').style.display = 'flex';
+        }
+
+        function proceedToSecondInningsSetup() {
+            // Close summary modal
+            document.getElementById('firstInningsSummaryModal').style.display = 'none';
+
+            // Now proceed with actual second innings setup
             gameState.innings = 2;
             gameState.target = gameState.totalRuns + 1;
             gameState.inningsCompleted = false;
@@ -1956,7 +2035,7 @@
         }
 
         function toggleBallTimer() {
-            if (ballTimerInterval) {
+            if (ballTimerAnimationId) {
                 stopBallTimer();
             } else {
                 startBallTimer();
@@ -1964,27 +2043,32 @@
         }
 
         function startBallTimer() {
-            ballTimerStart = Date.now() - currentBallElapsedMs;
-            ballTimerInterval = setInterval(() => {
-                currentBallElapsedMs = Date.now() - ballTimerStart;
-                document.getElementById('timerDisplay').textContent = formatTimeMs(currentBallElapsedMs);
-            }, 50);
+            ballTimerStart = performance.now() - currentBallElapsedMs;
+            ballTimerAnimationId = requestAnimationFrame(updateTimer);
             document.getElementById('btnToggleTimer').textContent = '⏸ STOP';
         }
 
+        function updateTimer() {
+            if (!ballTimerAnimationId) return;
+
+            currentBallElapsedMs = performance.now() - ballTimerStart;
+            document.getElementById('timerDisplay').textContent = formatTimeMs(currentBallElapsedMs);
+            ballTimerAnimationId = requestAnimationFrame(updateTimer);
+        }
+
         function stopBallTimer() {
-            if (ballTimerInterval) {
-                clearInterval(ballTimerInterval);
-                ballTimerInterval = null;
-                currentBallElapsedMs = Date.now() - ballTimerStart;
+            if (ballTimerAnimationId) {
+                cancelAnimationFrame(ballTimerAnimationId);
+                ballTimerAnimationId = null;
+                currentBallElapsedMs = performance.now() - ballTimerStart;
                 document.getElementById('btnToggleTimer').textContent = '▶ START';
             }
         }
 
         function resetBallTimer() {
-            if (ballTimerInterval) {
-                clearInterval(ballTimerInterval);
-                ballTimerInterval = null;
+            if (ballTimerAnimationId) {
+                cancelAnimationFrame(ballTimerAnimationId);
+                ballTimerAnimationId = null;
             }
             ballTimerStart = null;
             currentBallElapsedMs = 0;
@@ -2100,6 +2184,7 @@
                     let runsRemaining = Math.max(gameState.target - gameState.totalRuns, 0);
                     let oversRemaining = Math.max(gameState.totalOvers - (gameState.totalBalls / 6), 0);
                     requiredRunRate = oversRemaining > 0 ? (runsRemaining / oversRemaining).toFixed(2) : (runsRemaining === 0 ? '0.00' : '∞');
+                    runRateNote = `Need ${runsRemaining} runs from ${oversRemaining.toFixed(1)} overs`;
                 } else {
                     requiredRunRate = '-';
                     runRateNote = 'Unlimited overs - required run rate not available.';
@@ -2111,6 +2196,14 @@
             document.getElementById('currentRunRate').textContent = currentRunRate;
             document.getElementById('requiredRunRate').textContent = requiredRunRate;
             document.getElementById('runRateNote').textContent = runRateNote;
+
+            // Show/hide run rate panel based on innings
+            const runRatePanel = document.querySelector('.run-rate-panel');
+            if (gameState.innings === 2) {
+                runRatePanel.style.display = 'block';
+            } else {
+                runRatePanel.style.display = 'none';
+            }
 
             // This over balls
             let thisOverHtml = '';
