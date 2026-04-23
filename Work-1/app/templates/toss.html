@@ -306,10 +306,7 @@
             text-transform: uppercase;
             letter-spacing: 2px;
             width: 100%;
-            display: none;
-        }
-
-        .proceed-button.active {
+            margin-top: 20px;
             display: block;
         }
 
@@ -329,6 +326,108 @@
             margin-top: 30px;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
             padding-top: 20px;
+        }
+
+        /* Player Selection Section */
+        .player-selection-section {
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid #ffd700;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            display: none;
+        }
+
+        .player-selection-section.active {
+            display: block;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .player-selection-title {
+            font-size: 20px;
+            font-weight: 900;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .player-selection-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 18px;
+            margin-bottom: 20px;
+        }
+
+        .player-dropdown-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .player-dropdown-group label {
+            font-size: 14px;
+            font-weight: 700;
+            color: #ffed4e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .player-dropdown {
+            padding: 14px 16px;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            background: #16213e;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .player-dropdown:hover {
+            background: #0f3460;
+            border-color: #ffed4e;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+        }
+
+        .player-dropdown:focus {
+            outline: none;
+            background: #0f3460;
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .player-dropdown option {
+            background: #16213e;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .player-dropdown option:hover {
+            background: #0f3460;
+        }
+
+        .selection-error {
+            color: #ff6b6b;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            min-height: 20px;
+            margin-bottom: 10px;
         }
 
         /* Responsive */
@@ -381,6 +480,24 @@
             .proceed-button {
                 font-size: 16px;
                 padding: 15px 25px;
+            }
+
+            .player-selection-container {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+
+            .player-selection-title {
+                font-size: 16px;
+            }
+
+            .player-dropdown-group label {
+                font-size: 13px;
+            }
+
+            .player-dropdown {
+                padding: 12px 14px;
+                font-size: 13px;
             }
         }
     </style>
@@ -440,6 +557,56 @@
             </div>
         </div>
 
+        <!-- Player Selection Section -->
+        <div class="player-selection-section" id="playerSelectionSection">
+            <div class="player-selection-title">📋 Select Players for First Innings</div>
+            
+            <div class="player-selection-container">
+                <div class="player-dropdown-group">
+                    <label for="strikerSelect">🏏 Striker (Batter on Strike):</label>
+                    <select id="strikerSelect" class="player-dropdown" onchange="updateNonStrikerOptions()">
+                        <option value="">-- Select Striker --</option>
+                    </select>
+                </div>
+
+                <div class="player-dropdown-group">
+                    <label for="nonStrikerSelect">🏃 Non-Striker (Batter Off Strike):</label>
+                    <select id="nonStrikerSelect" class="player-dropdown">
+                        <option value="">-- Select Non-Striker --</option>
+                    </select>
+                </div>
+
+                <div class="player-dropdown-group">
+                    <label for="bowlerSelect">🎯 Bowler (First Bowler):</label>
+                    <select id="bowlerSelect" class="player-dropdown">
+                        <option value="">-- Select Bowler --</option>
+                    </select>
+                </div>
+
+                <div class="player-dropdown-group">
+                    <label for="oversSelect">📊 Match Format (Overs):</label>
+                    <select id="oversSelect" class="player-dropdown" onchange="handleOversChange()">
+                        <option value="20">🏏 T20 - 20 Overs</option>
+                        <option value="50">🏏 ODI - 50 Overs</option>
+                        <option value="unlimited">🏏 Test - Unlimited Overs</option>
+                        <option value="custom">⚙️ Custom Overs</option>
+                    </select>
+                </div>
+
+                <div class="player-dropdown-group" id="customOversGroup" style="display: none;">
+                    <label for="customOvers">Enter Custom Overs:</label>
+                    <input type="number" id="customOvers" class="player-dropdown" placeholder="e.g., 10" min="1" max="200" style="padding: 14px 16px; border: 2px solid #ffd700;">
+                </div>
+                <div class="player-dropdown-group" id="bowlerLimitGroup">
+                    <label for="bowlerMaxOvers">Bowler Max Overs:</label>
+                    <input type="number" id="bowlerMaxOvers" class="player-dropdown" placeholder="0 = unlimited" min="0" max="200" style="padding: 14px 16px; border: 2px solid #ffd700;">
+                    <p id="bowlerLimitNote" style="margin-top: 10px; font-size: 0.9rem; color: #f5f5f5;">Set the maximum overs a bowler may bowl. 0 means unlimited.</p>
+                </div>
+            </div>
+
+            <div class="selection-error" id="selectionError"></div>
+        </div>
+
         <!-- Proceed Button -->
         <button class="proceed-button" id="proceedBtn" onclick="proceedToScorecard()">
             ▶ Go to Scorecard
@@ -466,7 +633,9 @@
             tossWinner: null,          // who won toss
             decision: null,            // 'bat' or 'field'
             battingTeamName: null,
-            bowlingTeamName: null
+            bowlingTeamName: null,
+            battingTeamIndex: null,    // 0 = team1, 1 = team2
+            bowlingTeamIndex: null     // 0 = team1, 1 = team2
         };
 
         /**
@@ -475,6 +644,7 @@
         window.addEventListener('DOMContentLoaded', function() {
             loadGameData();
             updateTeamNames();
+            handleOversChange();
         });
 
         function loadGameData() {
@@ -596,23 +766,35 @@
                 if (decision === 'bat') {
                     tossState.battingTeamName = gameData.team1.name;
                     tossState.bowlingTeamName = gameData.team2.name;
+                    tossState.battingTeamIndex = 0; // Team 1 batting
+                    tossState.bowlingTeamIndex = 1; // Team 2 bowling
                 } else {
                     tossState.battingTeamName = gameData.team2.name;
                     tossState.bowlingTeamName = gameData.team1.name;
+                    tossState.battingTeamIndex = 1; // Team 2 batting
+                    tossState.bowlingTeamIndex = 0; // Team 1 bowling
                 }
             } else {
                 // Team 2 won toss
                 if (decision === 'bat') {
                     tossState.battingTeamName = gameData.team2.name;
                     tossState.bowlingTeamName = gameData.team1.name;
+                    tossState.battingTeamIndex = 1; // Team 2 batting
+                    tossState.bowlingTeamIndex = 0; // Team 1 bowling
                 } else {
                     tossState.battingTeamName = gameData.team1.name;
                     tossState.bowlingTeamName = gameData.team2.name;
+                    tossState.battingTeamIndex = 0; // Team 1 batting
+                    tossState.bowlingTeamIndex = 1; // Team 2 bowling
                 }
             }
 
+            // Show player selection section
+            populatePlayerDropdowns();
+            document.getElementById('playerSelectionSection').classList.add('active');
+
             // Show proceed button
-            document.getElementById('proceedBtn').classList.add('active');
+            document.getElementById('proceedBtn').style.display = 'block';
 
             // Update toss status with final decision
             const tossStatus = document.getElementById('tossStatus');
@@ -621,7 +803,162 @@
         }
 
         /**
-         * Proceed to scorecard with toss decision
+         * Populate player dropdowns with appropriate players
+         */
+        function populatePlayerDropdowns() {
+            const battingTeam = tossState.battingTeamIndex === 0 ? gameData.team1 : gameData.team2;
+            const bowlingTeam = tossState.bowlingTeamIndex === 0 ? gameData.team1 : gameData.team2;
+
+            // Populate Striker dropdown
+            const strikerSelect = document.getElementById('strikerSelect');
+            strikerSelect.innerHTML = '<option value="">-- Select Striker --</option>';
+            battingTeam.players.forEach((player, index) => {
+                const option = document.createElement('option');
+                option.value = index + '|' + player; // Store index and name
+                option.textContent = player;
+                strikerSelect.appendChild(option);
+            });
+            // Set first player as default
+            if (battingTeam.players.length > 0) {
+                strikerSelect.value = '0|' + battingTeam.players[0];
+                updateNonStrikerOptions();
+            }
+
+            // Populate Bowler dropdown
+            const bowlerSelect = document.getElementById('bowlerSelect');
+            bowlerSelect.innerHTML = '<option value="">-- Select Bowler --</option>';
+            bowlingTeam.players.forEach((player, index) => {
+                const option = document.createElement('option');
+                option.value = index + '|' + player; // Store index and name
+                option.textContent = player;
+                bowlerSelect.appendChild(option);
+            });
+            // Set first player as default
+            if (bowlingTeam.players.length > 0) {
+                bowlerSelect.value = '0|' + bowlingTeam.players[0];
+            }
+        }
+
+        /**
+         * Update Non-Striker dropdown to exclude selected Striker
+         */
+        function updateNonStrikerOptions() {
+            const strikerSelect = document.getElementById('strikerSelect');
+            const nonStrikerSelect = document.getElementById('nonStrikerSelect');
+            const strikerValue = strikerSelect.value;
+
+            const battingTeam = tossState.battingTeamIndex === 0 ? gameData.team1 : gameData.team2;
+
+            // Clear error message
+            document.getElementById('selectionError').textContent = '';
+
+            // Rebuild non-striker dropdown excluding striker
+            nonStrikerSelect.innerHTML = '<option value="">-- Select Non-Striker --</option>';
+            battingTeam.players.forEach((player, index) => {
+                // Skip if this player is the striker
+                if (strikerValue === (index + '|' + player)) {
+                    return;
+                }
+                const option = document.createElement('option');
+                option.value = index + '|' + player;
+                option.textContent = player;
+                nonStrikerSelect.appendChild(option);
+            });
+
+            // Set second player as default if available
+            if (battingTeam.players.length > 1 && strikerValue !== ('1|' + battingTeam.players[1])) {
+                nonStrikerSelect.value = '1|' + battingTeam.players[1];
+            }
+        }
+
+        /**
+         * Handle overs format change
+         */
+        function handleOversChange() {
+            const oversSelect = document.getElementById('oversSelect');
+            const customOversGroup = document.getElementById('customOversGroup');
+            const customOvers = document.getElementById('customOvers');
+            const bowlerMaxOvers = document.getElementById('bowlerMaxOvers');
+            const bowlerLimitNote = document.getElementById('bowlerLimitNote');
+
+            if (oversSelect.value === 'custom') {
+                customOversGroup.style.display = 'block';
+                customOvers.focus();
+                bowlerMaxOvers.disabled = false;
+                bowlerMaxOvers.value = '';
+                bowlerLimitNote.textContent = 'For a custom match, enter the bowler limit manually.';
+            } else {
+                customOversGroup.style.display = 'none';
+                customOvers.value = '';
+                bowlerMaxOvers.disabled = true;
+
+                if (oversSelect.value === '20') {
+                    bowlerMaxOvers.value = 4;
+                    bowlerLimitNote.textContent = 'T20 format uses a 4-over bowler limit.';
+                } else if (oversSelect.value === '50') {
+                    bowlerMaxOvers.value = 10;
+                    bowlerLimitNote.textContent = 'ODI format uses a 10-over bowler limit.';
+                } else if (oversSelect.value === 'unlimited') {
+                    bowlerMaxOvers.value = 0;
+                    bowlerLimitNote.textContent = 'Unlimited overs means no bowler limit.';
+                }
+            }
+        }
+
+        /**
+         * Validate player selections
+         */
+        function validatePlayerSelections() {
+            const strikerSelect = document.getElementById('strikerSelect');
+            const nonStrikerSelect = document.getElementById('nonStrikerSelect');
+            const bowlerSelect = document.getElementById('bowlerSelect');
+            const oversSelect = document.getElementById('oversSelect');
+            const customOvers = document.getElementById('customOvers');
+            const bowlerMaxOvers = document.getElementById('bowlerMaxOvers');
+            const errorDiv = document.getElementById('selectionError');
+
+            let errorMessage = '';
+
+            if (!strikerSelect.value) {
+                errorMessage = '❌ Please select a Striker';
+            } else if (!nonStrikerSelect.value) {
+                errorMessage = '❌ Please select a Non-Striker';
+            } else if (!bowlerSelect.value) {
+                errorMessage = '❌ Please select a Bowler';
+            } else if (!oversSelect.value) {
+                errorMessage = '❌ Please select match format';
+            } else if (oversSelect.value === 'custom' && (!customOvers.value || customOvers.value < 1)) {
+                errorMessage = '❌ Please enter valid custom overs (1-200)';
+            } else {
+                const maxBowlerOversValue = parseInt(bowlerMaxOvers.value);
+                if (isNaN(maxBowlerOversValue) || maxBowlerOversValue < 0) {
+                    errorMessage = '❌ Please enter a valid bowler max overs value (0 or greater)';
+                } else {
+                    const strikerName = strikerSelect.value.split('|')[1];
+                    const nonStrikerName = nonStrikerSelect.value.split('|')[1];
+                    const bowlerName = bowlerSelect.value.split('|')[1];
+
+                    if (strikerName === nonStrikerName) {
+                        errorMessage = '❌ Striker and Non-Striker must be different players';
+                    } else if (bowlerName === strikerName || bowlerName === nonStrikerName) {
+                        errorMessage = '❌ Bowler cannot be one of the batters';
+                    }
+                }
+            }
+
+            if (errorMessage) {
+                errorDiv.textContent = errorMessage;
+                errorDiv.style.color = '#ff6b6b';
+                return false;
+            }
+
+            errorDiv.textContent = '✅ All selections valid!';
+            errorDiv.style.color = '#2ecc71';
+            return true;
+        }
+
+        /**
+         * Proceed to scorecard with toss decision and player selection
          */
         function proceedToScorecard() {
             if (!tossState.decision) {
@@ -629,15 +966,60 @@
                 return;
             }
 
-            // Save toss info to localStorage
+            // Validate player selections
+            if (!validatePlayerSelections()) {
+                return;
+            }
+
+            // Extract selected players
+            const strikerValue = document.getElementById('strikerSelect').value.split('|');
+            const nonStrikerValue = document.getElementById('nonStrikerSelect').value.split('|');
+            const bowlerValue = document.getElementById('bowlerSelect').value.split('|');
+            const oversSelect = document.getElementById('oversSelect');
+            const customOvers = document.getElementById('customOvers');
+            const bowlerMaxOvers = document.getElementById('bowlerMaxOvers');
+
+            const strikerIndex = parseInt(strikerValue[0]);
+            const strikerName = strikerValue[1];
+            const nonStrikerIndex = parseInt(nonStrikerValue[0]);
+            const nonStrikerName = nonStrikerValue[1];
+            const bowlerIndex = parseInt(bowlerValue[0]);
+            const bowlerName = bowlerValue[1];
+
+            // Determine total overs
+            let totalOvers = 0;
+            if (oversSelect.value === 'custom') {
+                totalOvers = parseInt(customOvers.value);
+            } else if (oversSelect.value === 'unlimited') {
+                totalOvers = -1; // Unlimited
+            } else {
+                totalOvers = parseInt(oversSelect.value);
+            }
+
+            const maxBowlerOvers = parseInt(bowlerMaxOvers.value);
+
+            // Save toss info and player selection to localStorage
             const updatedGameData = {
                 ...gameData,
                 tossWinner: tossState.tossWinner,
                 battingTeam: tossState.battingTeamName,
                 bowlingTeam: tossState.bowlingTeamName,
+                battingTeamIndex: tossState.battingTeamIndex,
+                bowlingTeamIndex: tossState.bowlingTeamIndex,
                 tossDecision: tossState.decision,
                 coinResult: tossState.coinResult,
-                userChoice: tossState.userChoice
+                userChoice: tossState.userChoice,
+                // Player selections for first innings
+                strikerIndex: strikerIndex,
+                strikerName: strikerName,
+                nonStrikerIndex: nonStrikerIndex,
+                nonStrikerName: nonStrikerName,
+                bowlerIndex: bowlerIndex,
+                bowlerName: bowlerName,
+                // Match format
+                totalOvers: totalOvers,
+                matchFormat: oversSelect.value,
+                maxBowlerOvers: isNaN(maxBowlerOvers) ? 0 : maxBowlerOvers
             };
 
             localStorage.setItem('gameData', JSON.stringify(updatedGameData));
